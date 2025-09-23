@@ -1,23 +1,39 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
 import { BUSINESS_CATEGORIES } from '@/types/business';
-import { Filter, TrendingUp } from 'lucide-react';
+import { Search, Filter, TrendingUp, MapPin, DollarSign, Users, Calendar } from 'lucide-react';
 
 interface SidebarProps {
   selectedCategory: string;
   onCategoryChange: (value: string) => void;
   sortBy: string;
   onSortChange: (value: string) => void;
+  onSearch: (location: string, category: string) => void;
 }
 
 export const Sidebar = ({ 
   selectedCategory, 
   onCategoryChange, 
   sortBy, 
-  onSortChange 
+  onSortChange,
+  onSearch
 }: SidebarProps) => {
+  const [locationSearch, setLocationSearch] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 5000000]);
+  const [features, setFeatures] = useState({
+    negotiable: false,
+    established: false,
+    profitable: false,
+    franchiseOpportunity: false
+  });
+
   const categoryStats = [
     { category: 'tech', count: 8 },
     { category: 'restaurant', count: 6 },
@@ -26,110 +42,187 @@ export const Sidebar = ({
     { category: 'services', count: 4 },
   ];
 
+  const handleSearch = () => {
+    onSearch(locationSearch, selectedCategory);
+  };
+
+  const formatPrice = (price: number) => {
+    if (price >= 1000000) return `$${(price / 1000000).toFixed(1)}M`;
+    if (price >= 1000) return `$${(price / 1000).toFixed(0)}K`;
+    return `$${price}`;
+  };
+
   return (
-    <aside className="w-64 space-y-4">
-      {/* Quick Sort */}
-      <Card className="p-4 bg-card border-border shadow-card">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-foreground">Sort By</h3>
+    <aside className="w-80 space-y-4">
+      {/* Search Section */}
+      <Card className="p-4 bg-white border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Search className="w-4 h-4 text-gray-600" />
+          <h3 className="font-semibold text-gray-900">Search Businesses</h3>
+        </div>
+        
+        {/* Location Search */}
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Location
+            </label>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Enter city, state, or postcode"
+                value={locationSearch}
+                onChange={(e) => setLocationSearch(e.target.value)}
+                className="pl-10 border-gray-300"
+              />
+            </div>
+          </div>
+
+          {/* Category Search */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <Select value={selectedCategory} onValueChange={onCategoryChange}>
+              <SelectTrigger className="border-gray-300">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {BUSINESS_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button onClick={handleSearch} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Search className="w-4 h-4 mr-2" />
+            Search
+          </Button>
+        </div>
+      </Card>
+
+      {/* Price Range Filter */}
+      <Card className="p-4 bg-white border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <DollarSign className="w-4 h-4 text-gray-600" />
+          <h3 className="font-semibold text-gray-900">Price Range</h3>
+        </div>
+        
+        <div className="space-y-4">
+          <Slider
+            value={priceRange}
+            onValueChange={setPriceRange}
+            max={5000000}
+            min={0}
+            step={50000}
+            className="w-full"
+          />
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>{formatPrice(priceRange[0])}</span>
+            <span>{formatPrice(priceRange[1])}</span>
+          </div>
+          
+          {/* Quick Price Filters */}
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button 
+              onClick={() => setPriceRange([0, 500000])}
+              className="p-2 text-left border rounded hover:bg-gray-50"
+            >
+              Under $500K
+            </button>
+            <button 
+              onClick={() => setPriceRange([500000, 1000000])}
+              className="p-2 text-left border rounded hover:bg-gray-50"
+            >
+              $500K - $1M
+            </button>
+            <button 
+              onClick={() => setPriceRange([1000000, 2000000])}
+              className="p-2 text-left border rounded hover:bg-gray-50"
+            >
+              $1M - $2M
+            </button>
+            <button 
+              onClick={() => setPriceRange([2000000, 5000000])}
+              className="p-2 text-left border rounded hover:bg-gray-50"
+            >
+              $2M+
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Business Features */}
+      <Card className="p-4 bg-white border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Users className="w-4 h-4 text-gray-600" />
+          <h3 className="font-semibold text-gray-900">Business Features</h3>
+        </div>
+        
+        <div className="space-y-3">
+          {[
+            { key: 'negotiable', label: 'Price Negotiable' },
+            { key: 'established', label: 'Established Business' },
+            { key: 'profitable', label: 'Currently Profitable' },
+            { key: 'franchiseOpportunity', label: 'Franchise Opportunity' }
+          ].map((feature) => (
+            <div key={feature.key} className="flex items-center space-x-2">
+              <Checkbox
+                id={feature.key}
+                checked={features[feature.key as keyof typeof features]}
+                onCheckedChange={(checked) => 
+                  setFeatures(prev => ({ ...prev, [feature.key]: checked }))
+                }
+              />
+              <label htmlFor={feature.key} className="text-sm text-gray-700">
+                {feature.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Sort Options */}
+      <Card className="p-4 bg-white border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp className="w-4 h-4 text-gray-600" />
+          <h3 className="font-semibold text-gray-900">Sort Results</h3>
         </div>
         
         <Select value={sortBy} onValueChange={onSortChange}>
-          <SelectTrigger className="bg-background border-input">
+          <SelectTrigger className="border-gray-300">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
+          <SelectContent>
+            <SelectItem value="newest">Most Recent</SelectItem>
             <SelectItem value="price-low">Price: Low to High</SelectItem>
             <SelectItem value="price-high">Price: High to Low</SelectItem>
             <SelectItem value="name">Business Name</SelectItem>
             <SelectItem value="location">Location</SelectItem>
-            <SelectItem value="newest">Newest Listed</SelectItem>
           </SelectContent>
         </Select>
       </Card>
 
-      {/* Category Filters */}
-      <Card className="p-4 bg-card border-border shadow-card">
-        <div className="flex items-center gap-2 mb-3">
-          <Filter className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-foreground">Categories</h3>
-        </div>
-        
-        <div className="space-y-2">
-          <button
-            onClick={() => onCategoryChange('all')}
-            className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-              selectedCategory === 'all'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span>All Categories</span>
-              <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                30
-              </Badge>
-            </div>
-          </button>
-          
-          <Separator className="my-2" />
-          
-          {BUSINESS_CATEGORIES.map((category) => {
-            const stat = categoryStats.find(s => s.category === category.value);
-            const isSelected = selectedCategory === category.value;
-            const categoryColor = `category-${category.value}`;
-            
-            return (
-              <button
-                key={category.value}
-                onClick={() => onCategoryChange(category.value)}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  isSelected
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: `hsl(var(--${categoryColor}))` }}
-                    />
-                    <span>{category.label}</span>
-                  </div>
-                  <Badge 
-                    variant="secondary" 
-                    className={`${isSelected ? 'bg-primary-foreground text-primary' : 'bg-muted text-muted-foreground'}`}
-                  >
-                    {stat?.count || 0}
-                  </Badge>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </Card>
-
-      {/* Price Range */}
-      <Card className="p-4 bg-card border-border shadow-card">
-        <h3 className="font-semibold text-foreground mb-3">Price Range</h3>
+      {/* Quick Stats */}
+      <Card className="p-4 bg-white border-gray-200 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-3">Market Overview</h3>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-muted-foreground">
-            <span>Under $500K</span>
-            <span>12 listings</span>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Active Listings</span>
+            <span className="font-medium">30</span>
           </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>$500K - $1M</span>
-            <span>8 listings</span>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Avg. Price</span>
+            <span className="font-medium">$1.2M</span>
           </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>$1M - $2M</span>
-            <span>6 listings</span>
-          </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>Over $2M</span>
-            <span>4 listings</span>
+          <div className="flex justify-between">
+            <span className="text-gray-600">New This Week</span>
+            <span className="font-medium">5</span>
           </div>
         </div>
       </Card>

@@ -95,7 +95,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Header />
 
@@ -107,7 +107,7 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <div className="w-full px-8 py-6">
+      <div className="w-full px-8 py-6 bg-gray-50">
         <div className="flex gap-6 max-w-none">
           {/* Sidebar - Hidden on mobile */}
           <div className="hidden lg:block shrink-0 sticky top-24 h-fit">
@@ -116,6 +116,7 @@ const Index = () => {
               onCategoryChange={setSelectedCategory}
               sortBy={sortBy}
               onSortChange={setSortBy}
+              onSearch={handleHeroSearch}
             />
           </div>
 
@@ -134,7 +135,7 @@ const Index = () => {
             </div>
 
             {/* Grid - Facebook Marketplace style */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 bg-gray-50 p-4 rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {gridItems.map((item) => {
                 if ('isAd' in item) {
                   return <AdCard key={item.id} />;
