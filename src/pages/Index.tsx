@@ -122,17 +122,6 @@ const Index = () => {
 
           {/* Main Grid */}
           <div className="flex-1">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Businesses for Sale
-              </h2>
-              <p className="text-muted-foreground">
-                {filteredAndSortedBusinesses.length} businesses found
-                {searchTerm && ` for "${searchTerm}"`}
-                {locationFilter && ` in ${locationFilter}`}
-                {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-              </p>
-            </div>
 
             {/* Grid - Facebook Marketplace style */}
             <div className="grid grid-cols-3 gap-x-4 gap-y-6">

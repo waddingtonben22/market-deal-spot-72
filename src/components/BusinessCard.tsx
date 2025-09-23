@@ -36,7 +36,7 @@ export const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
       {/* Content - Facebook Marketplace style */}
       <div className="space-y-0.5">
         {/* Price - Large and prominent */}
-        <div className="text-lg font-semibold text-black">
+        <div className="text-lg font-semibold text-black group-hover:underline">
           {formatPrice(business.price)}
         </div>
         
@@ -46,7 +46,7 @@ export const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
         </div>
         
         {/* Location */}
-        <div className="flex items-center gap-1 text-xs text-gray-600">
+        <div className="flex items-center gap-1 text-xs text-gray-600 group-hover:underline">
           <MapPin className="w-3 h-3" />
           <span>{business.location}</span>
         </div>
