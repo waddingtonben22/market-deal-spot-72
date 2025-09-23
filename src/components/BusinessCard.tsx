@@ -21,7 +21,7 @@ export const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
 
   return (
     <div 
-      className="cursor-pointer group transition-all duration-200 hover:shadow-lg"
+      className="cursor-pointer group"
       onClick={onClick}
     >
       {/* Square Image */}
@@ -41,7 +41,7 @@ export const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
         </div>
         
         {/* Title */}
-        <div className="text-sm text-black line-clamp-2 leading-tight">
+        <div className="text-sm text-black line-clamp-2 leading-tight group-hover:underline">
           {business.name}
         </div>
         
